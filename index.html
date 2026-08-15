@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlgoClock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="shell">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+      <div class="logo"><span class="mark">A</span> AlgoClock</div>
+
+      <nav class="nav">
+        <button class="nav-item active" data-screen="dashboard"><span class="dot"></span>Dashboard</button>
+        <button class="nav-item" data-screen="timer"><span class="dot"></span>Timer</button>
+        <button class="nav-item" data-screen="tracking"><span class="dot"></span>Questions</button>
+        <button class="nav-item disabled" title="Coming soon"><span class="dot"></span>Patterns</button>
+        <button class="nav-item disabled" title="Coming soon"><span class="dot"></span>Analytics</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar" id="streak-flame">🔥</div>
+        <div>
+          <div class="who" id="sidebar-streak">0 day streak</div>
+          <div class="plan" id="sidebar-total">0 questions solved</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ================= MAIN ================= -->
+    <main class="main">
+
+      <!-- ---------- DASHBOARD ---------- -->
+      <section id="screen-dashboard" class="screen active">
+        <div class="topbar">
+          <div>
+            <h1 id="greeting">Good morning</h1>
+            <p class="sub" id="dash-date"></p>
+          </div>
+          <div class="streak-pill">🔥 <span class="n" id="streak-count">0</span> day streak</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <p class="eyebrow">Today</p>
+            <p class="focus-goal" id="dash-focus-line">No sessions logged yet</p>
+            <div class="track"><div class="track-fill" id="dash-track-fill" style="width:0%"></div></div>
+            <p class="track-caption" id="dash-track-caption">0 min studied today</p>
+          </div>
+
+          <div class="card">
+            <p class="eyebrow">All time</p>
+            <div class="stat-stack">
+              <div class="stat-row"><span class="num" id="stat-total">0</span><span class="label">Questions solved</span></div>
+              <div class="stat-divider"></div>
+              <div class="stat-row"><span class="num" id="stat-time">0h</span><span class="label">Total time</span></div>
+              <div class="stat-divider"></div>
+              <div class="stat-row"><span class="num" id="stat-revision">0%</span><span class="label">Revision completion</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card revision-card">
+          <p class="eyebrow">Revision due</p>
+          <div id="revision-list">
+            <p class="empty-hint">Solve a few questions and revision suggestions will show up here.</p>
+          </div>
+        </div>
+
+        <button class="continue-btn" data-screen="timer">
+          <span>Start a session
+            <span class="sub">Jump into the timer and log a question when you're done</span>
+          </span>
+          <span class="arrow">→</span>
+        </button>
+      </section>
+
+      <!-- ---------- TIMER ---------- -->
+      <section id="screen-timer" class="screen">
+        <div class="topbar">
+          <div>
+            <h1>Focus Session</h1>
+            <p class="sub">Pick a difficulty, start the timer, log the outcome when you're done.</p>
+          </div>
+        </div>
+
+        <div class="card timer-card">
+          <div class="difficulty-row">
+            <button class="diff-btn easy" data-diff="easy" data-min="25">Easy <span>25:00</span></button>
+            <button class="diff-btn medium" data-diff="medium" data-min="45">Medium <span>45:00</span></button>
+            <button class="diff-btn hard" data-diff="hard" data-min="60">Hard <span>60:00</span></button>
+          </div>
+
+          <div class="timer-face">
+            <div class="timer-display" id="timer-display">00:00</div>
+            <div class="timer-sub" id="timer-diff-label">Select a difficulty to begin</div>
+          </div>
+
+          <div class="timer-controls">
+            <button class="btn-primary" id="start-btn">Start Timer</button>
+            <button class="btn-secondary" id="pause-btn" disabled>Pause</button>
+            <button class="btn-secondary" id="end-btn" disabled>End Session</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- TRACKING ---------- -->
+      <section id="screen-tracking" class="screen">
+        <button class="add-btn" id="open-add-question">+ Add question</button>
+        <div class="topbar">
+          <div>
+            <h1>Question History</h1>
+            <p class="sub" id="track-count">0 questions logged</p>
+          </div>
+        </div>
+
+        <div class="filter-row">
+          <button class="filter-chip on" data-filter="all">All</button>
+          <button class="filter-chip" data-filter="easy">Easy</button>
+          <button class="filter-chip" data-filter="medium">Medium</button>
+          <button class="filter-chip" data-filter="hard">Hard</button>
+        </div>
+
+        <div class="table-head">
+          <div>Question</div><div>Difficulty</div><div>Pattern</div><div>Confidence</div><div>Solved</div>
+        </div>
+
+        <div id="q-list"></div>
+        <p class="empty-hint" id="q-empty">No questions logged yet. Click "+ Add question" to log your first one.</p>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= ADD QUESTION MODAL ================= -->
+  <div class="modal-overlay hidden" id="modal-overlay">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>Log a question</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <form id="question-form">
+        <label>Question name
+          <input type="text" id="f-name" required placeholder="Reverse Linked List">
+        </label>
+        <div class="form-row">
+          <label>Platform
+            <select id="f-platform">
+              <option>LeetCode</option>
+              <option>GeeksforGeeks</option>
+              <option>HackerRank</option>
+              <option>Codeforces</option>
+              <option>NeetCode</option>
+              <option>Other</option>
+            </select>
+          </label>
+          <label>Difficulty
+            <select id="f-difficulty">
+              <option value="easy">Easy</option>
+              <option value="medium" selected>Medium</option>
+              <option value="hard">Hard</option>
+            </select>
+          </label>
+        </div>
+        <div class="form-row">
+          <label>Pattern
+            <input type="text" id="f-pattern" placeholder="Linked Lists">
+          </label>
+          <label>Time taken (min)
+            <input type="number" id="f-time" min="0" placeholder="22">
+          </label>
+        </div>
+        <label>Confidence
+          <div class="confidence-picker" id="f-confidence">
+            <button type="button" data-val="1">Low</button>
+            <button type="button" data-val="2" class="on">Medium</button>
+            <button type="button" data-val="3">High</button>
+          </div>
+        </label>
+        <label>Notes
+          <textarea id="f-notes" rows="3" placeholder="What tripped you up, what clicked, anything worth remembering..."></textarea>
+        </label>
+        <button type="submit" class="btn-primary full">Save question</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
